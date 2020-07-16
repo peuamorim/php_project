@@ -1,11 +1,6 @@
-FROM php:7.2-fpm
+FROM php:7.4-fpm
 
-# Use the default production configuration
-RUN mv "$PHP_INI_DIR/php.ini-production" "$PHP_INI_DIR/php.ini"
-
-# Packages
-RUN docker-php-ext-install -j$(nproc) mbstring mysqli pdo_mysql bcmath opcache calendar exif pcntl shmop sysvmsg sysvsem sysvshm
-
+# System dependencies
 RUN apt-get update && apt-get install -y \
         libfreetype6-dev \
         libjpeg62-turbo-dev \
@@ -15,9 +10,18 @@ RUN apt-get update && apt-get install -y \
         gettext \
         libmcrypt-dev \
         libcurl4 \
-        libcurl4-openssl-dev
+        libcurl4-openssl-dev \
+        libonig-dev \
+        libzip-dev
 
-RUN docker-php-ext-install curl wddx xml soap xsl gettext zip gd sockets
+
+# Use the default production configuration
+RUN mv "$PHP_INI_DIR/php.ini-production" "$PHP_INI_DIR/php.ini"
+
+# Packages
+RUN docker-php-ext-install -j$(nproc) mbstring mysqli pdo_mysql bcmath opcache calendar exif pcntl shmop sysvmsg sysvsem sysvshm
+
+RUN docker-php-ext-install curl xml soap xsl gettext zip sockets
 
 RUN curl --silent --show-error https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
 
@@ -25,7 +29,7 @@ ENV COMPOSER_ALLOW_SUPERUSER true
 
 # Run composer and phpunit installation.
 RUN composer selfupdate && \
-  composer global require "phpunit/phpunit:~4.3" && \
+  composer global require --dev "phpunit/phpunit:^9" && \
   ln -s ~/.composer/vendor/bin/phpunit /usr/local/bin/phpunit
 
 # PHP.ini Config
