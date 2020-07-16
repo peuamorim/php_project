@@ -19,9 +19,8 @@ RUN apt-get update && apt-get install -y \
 RUN mv "$PHP_INI_DIR/php.ini-production" "$PHP_INI_DIR/php.ini"
 
 # Packages
-RUN docker-php-ext-install -j$(nproc) mbstring mysqli pdo_mysql bcmath opcache calendar exif pcntl shmop sysvmsg sysvsem sysvshm
-
-RUN docker-php-ext-install curl xml soap xsl gettext zip sockets
+# Feel free to remove things you won't use
+RUN docker-php-ext-install -j$(nproc) mysqli pdo_mysql pdo pdo_pgsql mbstring bcmath opcache calendar exif pcntl shmop sysvmsg sysvsem sysvshm curl xml soap xsl gettext zip sockets
 
 RUN curl --silent --show-error https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
 
@@ -34,7 +33,6 @@ RUN composer selfupdate && \
 
 # PHP.ini Config
 
-RUN sed -i 's|memory_limit = 128M|memory_limit = 1G|g' "$PHP_INI_DIR/php.ini"
 RUN sed -i 's|;date.timezone =|date.timezone = "America/Bahia"|g' "$PHP_INI_DIR/php.ini"
 RUN sed -i 's|upload_max_filesize = 2M|upload_max_filesize = 100M|g' "$PHP_INI_DIR/php.ini"
 RUN sed -i 's|post_max_size = 8M|post_max_size = 100M|g' "$PHP_INI_DIR/php.ini"

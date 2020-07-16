@@ -6,7 +6,7 @@ services:
     ports:
       - 1112:80
     networks:
-      - default
+      - agilize
   php:
     build:
       context: .
@@ -14,8 +14,8 @@ services:
     dns:
       - 8.8.8.8
     networks:
-      - default
+      - agilize
 networks:
-  default_network:
-    name: default
+  agilize:
+    name: agilize
     driver: bridge
